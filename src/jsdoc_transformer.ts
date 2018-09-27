@@ -287,7 +287,7 @@ function createMemberTypeDeclaration(
       mtt.error(fnDecl, 'anonymous abstract function');
       continue;
     }
-    const [tags, paramNames] = mtt.getFunctionTypeJSDoc([fnDecl], []);
+    const {tags, parameterNames} = mtt.getFunctionTypeJSDoc([fnDecl], []);
     if (hasExportingDecorator(fnDecl, mtt.typeChecker)) tags.push({tagName: 'export'});
     // memberNamespace because abstract methods cannot be static in TypeScript.
     const abstractFnDecl = ts.createStatement(ts.createAssignment(
@@ -297,7 +297,7 @@ function createMemberTypeDeclaration(
             /* asterisk */ undefined,
             /* name */ undefined,
             /* typeParameters */ undefined,
-            paramNames.map(
+            parameterNames.map(
                 n => ts.createParameter(
                     /* decorators */ undefined, /* modifiers */ undefined,
                     /* dotDotDot */ undefined, n)),
@@ -536,7 +536,7 @@ export function jsdocTransformer(
         const extraTags = [];
         if (hasExportingDecorator(fnDecl, typeChecker)) extraTags.push({tagName: 'export'});
 
-        const [tags, ] = moduleTypeTranslator.getFunctionTypeJSDoc([fnDecl], extraTags);
+        const {tags} = moduleTypeTranslator.getFunctionTypeJSDoc([fnDecl], extraTags);
         const mjsdoc = moduleTypeTranslator.getMutableJSDoc(fnDecl);
         mjsdoc.tags = tags;
         mjsdoc.updateComment();
