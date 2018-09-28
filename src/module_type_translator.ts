@@ -377,7 +377,7 @@ export class ModuleTypeTranslator {
    *    function statement; for overloads, name will have been merged.
    */
   getFunctionTypeJSDoc(fnDecls: ts.SignatureDeclaration[], extraTags: jsdoc.Tag[] = []):
-      {tags: jsdoc.Tag[], parameterNames: string[], hasThisReturnType: boolean} {
+      {tags: jsdoc.Tag[], parameterNames: string[], thisReturnType: ts.Type|null} {
     const typeChecker = this.typeChecker;
 
     // De-duplicate tags and docs found for the fnDecls.
@@ -401,7 +401,7 @@ export class ModuleTypeTranslator {
     const returnTags: jsdoc.Tag[] = [];
     const typeParameterNames = new Set<string>();
 
-    let hasThisReturnType = false;
+    let thisReturnType: ts.Type|null = null;
     for (const fnDecl of fnDecls) {
       // Construct the JSDoc comment by reading the existing JSDoc, if
       // any, and merging it with the known types of the function
@@ -480,7 +480,7 @@ export class ModuleTypeTranslator {
         // tslint:disable-next-line:no-any accessing TS internal field.
         if ((retType as any).isThisType) {
           // foo(): this
-          hasThisReturnType = true;
+          thisReturnType = retType;
           addTag({tagName: 'template', text: 'THIS'});
           addTag({tagName: 'this', type: 'THIS'});
           returnTag.type = 'THIS';
@@ -537,7 +537,7 @@ export class ModuleTypeTranslator {
     return {
       tags: newDoc,
       parameterNames: newDoc.filter(t => t.tagName === 'param').map(t => t.parameterName!),
-      hasThisReturnType
+      thisReturnType,
     };
   }
 }
